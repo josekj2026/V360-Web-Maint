@@ -15915,7 +15915,6 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
       var contrVals = [], otVals = [], bdVals = [], bklVals = [];
       var scrapVals = [], reworkVals = [];
       for (var i = 0; i < nPts; i++) {
-        oeeVals.push(_v3v(58, 48, 72));
         pvaPlanned.push(_v3v(210, 180, 260));
         pvaActual.push(pvaPlanned[i] + _v3v(40, 20, 90));
         dtVals.push(_v3v(55, 30, 75));
@@ -15927,10 +15926,19 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
         reworkVals.push(_v3v(4, 1, 7));
       }
 
-      // Derived values
-      var oeeNow = oeeVals[nPts - 1], oeeStart = oeeVals[0], oeeDelta = oeeNow - oeeStart;
+      // A·P·Q driven OEE — OEE = Availability × Performance × Quality
       var avail = _v3v(82, 70, 90), perf = _v3v(87, 78, 95), qual = _v3v(94, 88, 99);
       var availPrev = avail - _v3v(8, 3, 14), perfPrev = perf - _v3v(4, 1, 8), qualPrev = qual - _v3v(3, 1, 6);
+      var oeeNow = Math.round(avail * perf * qual / 10000);
+      var oeeStart = Math.round(availPrev * perfPrev * qualPrev / 10000);
+      var oeeDelta = oeeNow - oeeStart;
+      for (var i = 0; i < nPts; i++) {
+        var base = oeeStart + Math.round((oeeNow - oeeStart) * i / (nPts - 1 || 1));
+        var noise = (i === 0 || i === nPts - 1) ? 0 : _v3v(0, -2, 2);
+        oeeVals.push(Math.max(30, Math.min(95, base + noise)));
+      }
+      oeeVals[0] = oeeStart;
+      oeeVals[nPts - 1] = oeeNow;
       var gapClosed = _v3v(72, 40, 110);
       var dtSaved = _v3v(30, 15, 50);
       var contrTotal = 0, otTotal = 0;
@@ -15955,14 +15963,32 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
       var cpguDelta = (cpguStart - cpguNow).toFixed(1);
       var cpguTarget = parseFloat((cpguNow - _v3vf(1.5)).toFixed(2));
       var ccDeltas = [_v3v(57, 30, 70), _v3v(59, 35, 75), _v3v(55, 30, 70), _v3v(45, 20, 60)];
+      var pmVals = [], cmVals = [], pmPctVals = [];
+      for (var i = 0; i < nPts; i++) {
+        var _pm = _v3v(53, 30, 80), _cm = _v3v(78, 50, 110);
+        pmVals.push(_pm);
+        cmVals.push(_cm);
+        pmPctVals.push(Math.round(_pm / (_pm + _cm) * 100));
+      }
+      var pmPctNow = pmPctVals[nPts - 1], pmPctStart = pmPctVals[0];
+      var cmPctNow = 100 - pmPctNow;
+      var relBand = pmPctNow < 40 ? 'Unstable' : pmPctNow < 60 ? 'Reactive-Prone' : pmPctNow < 80 ? 'Improving' : 'Highly Reliable';
+      var capHrsSeed = _v3v(74, 50, 100);
+      var vbOppMonthly = _v3v(72, 50, 95);
+      var vbBacklogValue = _v3v(4, 2, 8);
+      var capHrs = _v3v(74, 50, 100);
+      var capDowntimeValue = _v3v(72, 50, 95);
+      var capBacklogValue = _v3v(7, 3, 12);
+      var capFixedValue = _v3v(92, 60, 130);
+      void capHrsSeed;
 
       // ── KPI Cards ──
       var kpiEl = document.getElementById('iv2-kpi-row');
       kpiEl.innerHTML = '<div class="iv2-kpi-grid" style="grid-template-columns:repeat(5,1fr)">'
         + _iv2Kpi('Total $ Value Delivered', '$' + vbTotal + 'K', '#1c8d4f', 'OEE recovery + maintenance savings')
-        + _iv2Kpi('OEE Improvement', '+' + Math.abs(oeeDelta) + ' pts', '#3d5afe', oeeStart + '% → ' + oeeNow + '%', 'oee')
-        + _iv2Kpi('Maint. Labor Saved', laborFreed + ' hrs/mo', '#2a2b30', '$' + laborCost + 'K/mo labor freed', 'labor')
-        + _iv2Kpi('PM:CM Ratio', pmHrs + '%', '#b5792d', 'from 38% — target ' + cmTarget + '%+', 'pmcm')
+        + _iv2Kpi('OEE Improvement', '$' + vbOee + 'K', '#3d5afe', '+' + Math.abs(oeeDelta) + ' pts (' + oeeStart + '% → ' + oeeNow + '%)', 'oee')
+        + _iv2Kpi('Maint. Labor Saved', '$' + (vbMaint + vbContr + vbOt) + 'K', '#2a2b30', laborFreed + ' hrs/mo · $' + laborCost + 'K/mo freed', 'labor')
+        + _iv2Kpi('PM:CM Ratio', pmPctNow + ':' + cmPctNow, '#b5792d', relBand + ' — target ' + cmTarget + '%+', 'pmcm')
         + _iv2Kpi('Remaining Opportunity', '$' + remainOpp + 'K', '#d92d20', 'available at target OEE')
         + '</div>';
 
@@ -15985,24 +16011,23 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
        {d:'#1c8d4f',bg:'rgba(28,141,79,0.04)',bd:'rgba(28,141,79,0.18)',t:'Planned vs actual gap closed: 74 hrs/mo \u00d7 $65/hr saved in rework labor',v:'$'+vbMaint+'K'},
        {d:'#1c8d4f',bg:'rgba(28,141,79,0.04)',bd:'rgba(28,141,79,0.18)',t:'From $22K/mo \u2192 $9.5K/mo in contractor spend over '+mc+' months',v:'$'+vbContr+'K'},
        {d:'#1c8d4f',bg:'rgba(28,141,79,0.04)',bd:'rgba(28,141,79,0.18)',t:'OT cost reduced from $14.2K \u2192 $5.8K per month',v:'$'+vbOt+'K'},
-       {d:'#ffab40',bg:'rgba(255,171,64,0.06)',bd:'rgba(255,171,64,0.26)',t:'4 OEE pts still to close \u2014 $72K/mo available if target achieved',v:'$'+_v3v(72,50,95)+'K'},
-       {d:'#ffab40',bg:'rgba(255,171,64,0.06)',bd:'rgba(255,171,64,0.26)',t:'210 hrs backlog \u2014 30% redeployable to PM or fixed cost reduction',v:'$'+_v3v(4,2,8)+'K'}
+       {d:'#ffab40',bg:'rgba(255,171,64,0.06)',bd:'rgba(255,171,64,0.26)',t:'4 OEE pts still to close \u2014 $72K/mo available if target achieved',v:'$'+vbOppMonthly+'K'},
+       {d:'#ffab40',bg:'rgba(255,171,64,0.06)',bd:'rgba(255,171,64,0.26)',t:'210 hrs backlog \u2014 30% redeployable to PM or fixed cost reduction',v:'$'+vbBacklogValue+'K'}
       ].forEach(function(l){h+='<div class="iv2-vb-line" style="--iv2-vb-row-bg:'+l.bg+';--iv2-vb-row-border:'+l.bd+'"><div class="iv2-vb-line-dot" style="background:'+l.d+'"></div><div class="iv2-vb-line-text">'+l.t+'</div><div class="iv2-vb-line-val">'+l.v+'</div></div>';});
       h += '</div></div></div>';
       h += '</div>';
 
-      var capHrs = _v3v(74, 50, 100);
       h += '<div class="iv2-foundation-side">';
       h += '<div class="iv2-widget iv2-primary" data-cat="" id="iv2-capacity"><div class="iv2-widget-hdr"><div class="iv2-widget-title">Capacity Reallocation \u2014 Choose Your Path</div>'+_siaIcon('Capacity Reallocation')+'</div><div class="iv2-widget-body" style="overflow-y:auto">';
       h += '<div class="iv2-primary-note"><span><strong>' + capHrs + ' hrs/mo freed</strong> from efficiency gains can be converted into reliability, backlog acceleration, or fixed-cost reduction.</span></div>';
       var capScenarios = [
-        {i:'build',bg:'#fff3e0',c:'#b5792d',t:'Drive Down Unplanned Downtime',s:'Redeploy to Predictive & Preventive Execution',v:'$'+_v3v(72,50,95)+'K',
+        {i:'build',bg:'#fff3e0',c:'#b5792d',t:'Drive Down Unplanned Downtime',s:'Redeploy to Predictive & Preventive Execution',v:'$'+capDowntimeValue+'K',
          detail:'Redeploy freed hours to predictive inspections and PM execution \u2014 reducing unplanned downtime events by an estimated 40% within 3 months.',
          highlight:'Annualized downtime cost reduction: ~$72K/yr'},
-        {i:'trending_down',bg:'#ecefff',c:'#3d5afe',t:'Accelerate Backlog Reduction',s:'PM:CM Ratio Improvement to 70%+',v:'$'+_v3v(7,3,12)+'K',
+        {i:'trending_down',bg:'#ecefff',c:'#3d5afe',t:'Accelerate Backlog Reduction',s:'PM:CM Ratio Improvement to 70%+',v:'$'+capBacklogValue+'K',
          detail:'Use freed capacity to accelerate backlog clearance and shift PM:CM ratio above 70%, reducing corrective workload and stabilizing scheduling.',
          highlight:'Annualized backlog reduction value: ~$7K/yr'},
-        {i:'savings',bg:'#e6f9ee',c:'#1c8d4f',t:'Take Out Fixed Costs',s:'Eliminate Contractors + Reduce OT Headroom',v:'$'+_v3v(92,60,130)+'K',
+        {i:'savings',bg:'#e6f9ee',c:'#1c8d4f',t:'Take Out Fixed Costs',s:'Eliminate Contractors + Reduce OT Headroom',v:'$'+capFixedValue+'K',
          detail:'With internal capacity freed, eliminate remaining contract spend and cap overtime at emergency-only \u2014 redirecting the savings to P&L directly.',
          highlight:'Annualized fixed cost reduction: ~$92K/yr (contractor + OT)'}
       ];
@@ -16039,9 +16064,9 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
         h+='<div class="iv2-apq-row"><div class="iv2-apq-label">'+a.l+'</div><div class="iv2-apq-bar-track"><div class="iv2-apq-bar-fill" style="width:'+a.v+'%;background:'+a.c+'"></div></div><div class="iv2-apq-vals">'+a.p+'% <strong>'+a.v+'%</strong> <span class="iv2-apq-delta" style="color:#1c8d4f">+'+(a.v-a.p)+'pts</span></div></div>';
       });
       h += '</div></div>';
-      h += '<div class="iv2-widget iv2-drill" data-cat="maintenance" data-driver="labor pmcm"><div class="iv2-widget-hdr"><div class="iv2-widget-title">Planned vs. Actual Hours '+_catBadge('maintenance')+'</div><div class="iv2-widget-badge red">Gap closed ' + gapClosed + ' hrs</div>'+_siaIcon('Planned vs. Actual Hours')+'</div><div class="iv2-widget-body"><div class="iv2-drill-from"><span class="material-icons-outlined">account_tree</span>Value Bridge: labor efficiency</div><div id="iv2-hc-pva" style="height:240px"></div></div></div>';
-      h += '<div class="iv2-widget iv2-drill" data-cat="maintenance" data-driver="pmcm opportunity"><div class="iv2-widget-hdr"><div class="iv2-widget-title">Unplanned Downtime (hrs/mo) '+_catBadge('maintenance')+'</div><div class="iv2-widget-badge green">\u27f3 ' + dtSaved + ' hrs saved</div>'+_siaIcon('Unplanned Downtime')+'</div><div class="iv2-widget-body"><div class="iv2-drill-from"><span class="material-icons-outlined">route</span>Capacity path: reliability</div><div id="iv2-hc-dt" style="height:140px"></div></div></div>';
-      h += '<div class="iv2-widget iv2-drill" data-cat="operations" data-driver="oee opportunity"><div class="iv2-widget-hdr"><div class="iv2-widget-title">Scrap & Rework Cost '+_catBadge('operations')+'</div><div class="iv2-widget-badge green">\u27f3 $'+scrapSaved+'K/mo saved</div>'+_siaIcon('Scrap & Rework Cost')+'</div><div class="iv2-widget-body"><div class="iv2-drill-from"><span class="material-icons-outlined">account_tree</span>Value Bridge: quality recovery</div><div id="iv2-hc-sr" style="height:140px"></div></div></div>';
+      h += '<div class="iv2-widget iv2-drill" data-cat="maintenance" data-driver="labor pmcm"><div class="iv2-widget-hdr"><div class="iv2-widget-title">Planned vs. Actual Hours '+_catBadge('maintenance')+'</div><div class="iv2-widget-badge red">Gap closed ' + gapClosed + ' hrs</div>'+_siaIcon('Planned vs. Actual Hours')+'</div><div class="iv2-widget-body"><div class="iv2-drill-from"><span class="material-icons-outlined">account_tree</span>Value Bridge: labor efficiency</div><div id="iv2-hc-pva" style="height:270px"></div></div></div>';
+      h += '<div class="iv2-widget iv2-drill" data-cat="maintenance" data-driver="pmcm opportunity"><div class="iv2-widget-hdr"><div class="iv2-widget-title">Unplanned Downtime (hrs/mo) '+_catBadge('maintenance')+'</div><div class="iv2-widget-badge green">\u27f3 ' + dtSaved + ' hrs saved</div>'+_siaIcon('Unplanned Downtime')+'</div><div class="iv2-widget-body"><div class="iv2-drill-from"><span class="material-icons-outlined">route</span>Capacity path: reliability</div><div id="iv2-hc-dt" style="height:270px"></div></div></div>';
+      h += '<div class="iv2-widget iv2-drill" data-cat="operations" data-driver="oee opportunity"><div class="iv2-widget-hdr"><div class="iv2-widget-title">Scrap & Rework Cost '+_catBadge('operations')+'</div><div class="iv2-widget-badge green">\u27f3 $'+scrapSaved+'K/mo saved</div>'+_siaIcon('Scrap & Rework Cost')+'</div><div class="iv2-widget-body"><div class="iv2-drill-from"><span class="material-icons-outlined">account_tree</span>Value Bridge: quality recovery</div><div id="iv2-hc-sr" style="height:320px"></div></div></div>';
       h += '<div class="iv2-widget iv2-drill" data-cat="maintenance" data-driver="labor pmcm opportunity"><div class="iv2-widget-hdr"><div class="iv2-widget-title">Cost Category Trends '+_catBadge('maintenance')+'</div>'+_siaIcon('Cost Category Trends')+'</div><div class="iv2-widget-body"><div class="iv2-drill-from"><span class="material-icons-outlined">route</span>Capacity path: cost takeout</div><div class="iv2-cc-grid">';
       [{t:'Contractor Spend',v:'$'+Math.round(contrVals[nPts-1])+'K',d:'\u25bc'+ccDeltas[0]+'%',id:'iv2-hc-cc0'},
        {t:'Overtime Cost',v:'$'+Math.round(otVals[nPts-1])+'K',d:'\u25bc'+ccDeltas[1]+'%',id:'iv2-hc-cc1'},
@@ -16063,7 +16088,7 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
         legend:{enabled:false}, plotOptions:{spline:{dataLabels:{enabled:true,format:'{y}%',style:{fontSize:'11px',fontWeight:'700'}},marker:{enabled:true,radius:5,lineWidth:2,lineColor:null}}},
         series:[{name:'OEE',data:oeeVals.map(function(v,i){return {y:v,color:oeeColors[i],marker:{fillColor:oeeColors[i],lineColor:oeeColors[i]}}}),color:'#d92d20',zones:[{value:60,color:'#d92d20'},{value:68,color:'#ffab40'},{color:'#1c8d4f'}]}] });
 
-      _hc('iv2-hc-pva', { chart:{type:'column',height:240}, xAxis:{categories:xl}, yAxis:{title:{text:null}},
+      _hc('iv2-hc-pva', { chart:{type:'column',height:270}, xAxis:{categories:xl}, yAxis:{title:{text:null}},
         plotOptions:{column:{borderRadius:3,groupPadding:0.15,pointPadding:0.05,dataLabels:{enabled:true,format:'{y}h',style:{fontSize:'10px'}}}},
         legend:{enabled:true,align:'center',verticalAlign:'bottom'},
         series:[{name:'Planned',data:pvaPlanned,color:'#c3ccff'},{name:'Actual',data:pvaActual,color:'#3d5afe'}] });
@@ -16086,7 +16111,7 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
           {low:0,high:vbTotal,color:'#1da7df',custom:{value:vbTotal,label:'$'+vbTotal+'K'}}
         ]}] });
 
-      _hc('iv2-hc-dt', { chart:{type:'column',height:140}, xAxis:{categories:xl}, yAxis:{title:{text:null}},
+      _hc('iv2-hc-dt', { chart:{type:'column',height:270}, xAxis:{categories:xl}, yAxis:{title:{text:null}},
         legend:{enabled:false}, plotOptions:{column:{borderRadius:3,dataLabels:{enabled:true,style:{fontSize:'11px',fontWeight:'700'}}}},
         series:[{name:'Hours',data:dtVals.map(function(v){return {y:v,color:v>dtVals[0]*0.8?'#d92d20':v>dtVals[0]*0.5?'#ffab40':'#1c8d4f'}})}] });
 
@@ -16099,7 +16124,7 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
           series:[{data:ccSeries[ci],color:ccColors[ci]}] });
       }
 
-      _hc('iv2-hc-sr', { chart:{type:'column',height:140}, xAxis:{categories:xl}, yAxis:{title:{text:null}},
+      _hc('iv2-hc-sr', { chart:{type:'column',height:320}, xAxis:{categories:xl}, yAxis:{title:{text:null}},
         plotOptions:{column:{stacking:'normal',borderRadius:3,dataLabels:{enabled:false}}},
         legend:{enabled:true,align:'center',verticalAlign:'bottom'},
         tooltip:{shared:true,valuePrefix:'$',valueSuffix:'K'},
