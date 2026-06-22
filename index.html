@@ -3713,32 +3713,29 @@
       color: #2a2b30; line-height: 1.34; flex: 1;
     }
     .iv2-ai-text strong { font-weight: 700; }
-    .iv2-cap-narrative {
+    .iv2-exec-list {
       background: #ffffff;
       border: 1px solid #e2e4e9;
       border-radius: 8px;
       box-shadow: none;
-      margin: 0 0 8px;
+      overflow: hidden;
     }
-    .iv2-cap-narrative .iv2-ai-hdr {
-      padding: 7px 9px 5px;
-      border-bottom: 1px solid #eff1f5;
-    }
-    .iv2-cap-narrative .iv2-ai-body {
+    .iv2-exec-list .iv2-ai-body {
       display: flex;
       flex-direction: column;
       gap: 0;
-      padding: 5px 9px 7px;
+      padding: 4px 8px;
     }
-    .iv2-cap-narrative .iv2-ai-row {
+    .iv2-exec-list .iv2-ai-row {
       min-height: 0;
-      padding: 6px 0;
+      gap: 7px;
+      padding: 5px 0;
       border: 0;
       border-radius: 0;
       background: transparent;
     }
-    .iv2-cap-narrative .iv2-ai-row + .iv2-ai-row { border-top: 1px solid #eff1f5; }
-    .iv2-cap-narrative .iv2-ai-dot {
+    .iv2-exec-list .iv2-ai-row + .iv2-ai-row { border-top: 1px solid #eff1f5; }
+    .iv2-exec-list .iv2-ai-dot {
       width: 16px;
       height: 16px;
       border-radius: 5px;
@@ -3804,11 +3801,29 @@
       gap: 12px; margin-bottom: 24px; align-items: stretch;
     }
     .iv2-foundation-main { display: contents; }
-    .iv2-foundation-main > .iv2-ai-summary { grid-area: narrative; margin-bottom: 0; }
     #iv2-value-bridge { grid-area: bridge; }
-    #iv2-capacity { grid-area: capacity; }
-    #iv2-value-bridge,
-    #iv2-capacity { height: 100%; }
+    .iv2-foundation-side {
+      grid-area: capacity;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      height: 100%;
+      min-height: 0;
+    }
+    #iv2-value-bridge { height: 100%; }
+    #iv2-exec-narrative {
+      flex: 0 0 auto;
+      min-height: 0;
+    }
+    #iv2-exec-narrative .iv2-widget-hdr { margin-bottom: 8px; }
+    #iv2-exec-narrative .iv2-ai-text {
+      font-size: 9.6px;
+      line-height: 1.25;
+    }
+    #iv2-capacity {
+      flex: 1 1 0;
+      min-height: 0;
+    }
     .iv2-widget.iv2-primary {
       min-height: 330px; padding: 11px 13px; border-color: #e2e4e9;
       background: linear-gradient(180deg, #ffffff 0%, #fbfcff 100%);
@@ -3820,6 +3835,11 @@
     }
     .iv2-widget.iv2-primary .iv2-widget-body {
       justify-content: flex-start;
+    }
+    #iv2-value-bridge .iv2-widget-body { justify-content: space-between; }
+    #iv2-hc-vb {
+      height: 260px !important;
+      flex: 0 0 260px;
     }
     .iv2-primary-note {
       display: flex; align-items: center; justify-content: space-between; gap: 12px;
@@ -15725,7 +15745,7 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
       h += '<div class="iv2-foundation-main">';
       h += '<div class="iv2-widget iv2-primary" data-cat="" id="iv2-value-bridge"><div class="iv2-widget-hdr"><div class="iv2-widget-title">Value Bridge \u2014 Sources of Gain</div><div class="iv2-widget-badge green">$' + vbTotal + 'K</div>'+_siaIcon('Value Bridge')+'</div><div class="iv2-widget-body">';
       h += '<div class="iv2-primary-note"><span class="iv2-primary-note-main"><strong>$' + vbTotal + 'K verified value</strong> consolidates OEE recovery, maintenance labor efficiency, contractor reduction, and overtime takeout.<span class="iv2-primary-note-extra">Remaining opportunity: $' + remainOpp + 'K</span></span></div>';
-      h += '<div id="iv2-hc-vb" style="height:170px"></div>';
+      h += '<div id="iv2-hc-vb" style="height:260px"></div>';
       h += '<div class="iv2-vb-lines">';
       [{d:'#3d5afe',bg:'rgba(61,90,254,0.04)',bd:'rgba(61,90,254,0.18)',t:'+13 OEE pts \u00d7 $18K/pt \u2014 recovered throughput & margin',v:'$'+vbOee+'K'},
        {d:'#1c8d4f',bg:'rgba(28,141,79,0.04)',bd:'rgba(28,141,79,0.18)',t:'Planned vs actual gap closed: 74 hrs/mo \u00d7 $65/hr saved in rework labor',v:'$'+vbMaint+'K'},
@@ -15738,15 +15758,15 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
       h += '</div>';
 
       var capHrs = _v3v(74, 50, 100);
-      h += '<div class="iv2-widget iv2-primary" data-cat="" id="iv2-capacity"><div class="iv2-widget-hdr"><div class="iv2-widget-title">Capacity Reallocation \u2014 Choose Your Path</div>'+_siaIcon('Capacity Reallocation')+'</div><div class="iv2-widget-body" style="overflow-y:auto">';
-      h += '<div class="iv2-primary-note"><span><strong>' + capHrs + ' hrs/mo freed</strong> from efficiency gains can be converted into reliability, backlog acceleration, or fixed-cost reduction.</span></div>';
-      h += '<div class="iv2-ai-summary iv2-cap-narrative" data-cat="">';
-      h += '<div class="iv2-ai-hdr"><div class="iv2-ai-title-row"><span class="material-icons-outlined" style="font-size:13px;color:#3d5afe">auto_awesome</span><span class="iv2-ai-title">Executive Narrative</span></div></div>';
-      h += '<div class="iv2-ai-body">';
+      h += '<div class="iv2-foundation-side">';
+      h += '<div class="iv2-widget iv2-primary" data-cat="" id="iv2-exec-narrative"><div class="iv2-widget-hdr"><div class="iv2-widget-title">Executive Narrative</div>'+_siaIcon('Executive Narrative')+'</div><div class="iv2-widget-body">';
+      h += '<div class="iv2-exec-list"><div class="iv2-ai-body">';
       h += '<div class="iv2-ai-row"><div class="iv2-ai-dot">1</div><div class="iv2-ai-text">Past ' + mc + ' months delivered <strong>$' + vbTotal + 'K</strong> in verified value. OEE moved <strong>' + Math.abs(oeeDelta) + ' pts</strong>, led by availability gains on Lines 1, 3, and 4.</div></div>';
       h += '<div class="iv2-ai-row"><div class="iv2-ai-dot">2</div><div class="iv2-ai-text">Maintenance execution tightened: planned vs. actual gap closed <strong>' + gapClosed + ' hrs</strong>, contractor spend fell <strong>$' + Math.round(contrVals[0] - contrVals[nPts-1]) + 'K/mo</strong>, and downtime shifted from <strong>' + dtVals[0] + 'h</strong> to <strong>' + dtVals[nPts-1] + 'h</strong>.</div></div>';
       h += '<div class="iv2-ai-row"><div class="iv2-ai-dot">3</div><div class="iv2-ai-text">Recommended path: <strong>fixed cost elimination</strong>. With ' + laborFreed + ' hrs/mo freed, cap contractors and OT at emergency-only to unlock about <strong>$92K/yr</strong>.</div></div>';
-      h += '</div></div>';
+      h += '</div></div></div></div>';
+      h += '<div class="iv2-widget iv2-primary" data-cat="" id="iv2-capacity"><div class="iv2-widget-hdr"><div class="iv2-widget-title">Capacity Reallocation \u2014 Choose Your Path</div>'+_siaIcon('Capacity Reallocation')+'</div><div class="iv2-widget-body" style="overflow-y:auto">';
+      h += '<div class="iv2-primary-note"><span><strong>' + capHrs + ' hrs/mo freed</strong> from efficiency gains can be converted into reliability, backlog acceleration, or fixed-cost reduction.</span></div>';
       var capScenarios = [
         {i:'build',bg:'#fff3e0',c:'#b5792d',t:'Drive Down Unplanned Downtime',s:'Redeploy to Predictive & Preventive Execution',v:'$'+_v3v(72,50,95)+'K',
          detail:'Redeploy freed hours to predictive inspections and PM execution \u2014 reducing unplanned downtime events by an estimated 40% within 3 months.',
@@ -15769,6 +15789,7 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
         h+='</div>';
       });
       h += '</div></div>';
+      h += '</div>';
       h += '</div>';
 
       h += '<div class="iv2-drill-header" id="iv2-drilldowns"><div><div class="iv2-drill-kicker">Drill-down evidence</div><div class="iv2-drill-title">Trace each gain back to its operational driver</div><div class="iv2-drill-filter-row" id="iv2-driver-filters" aria-label="Drill-down metric filters">';
@@ -15819,7 +15840,7 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
       var vbCumContr = vbCumMaint + vbContr;
       var vbCumOt = vbCumContr + vbOt;
       var vbAxisMax = Math.max(400, Math.ceil((vbTotal * 1.16) / 200) * 200);
-      _hc('iv2-hc-vb', { chart:{type:'columnrange',height:170,spacing:[6,6,0,4],marginLeft:48,marginBottom:30}, xAxis:{categories:['Baseline','OEE Recovery','Maintenance Cost','Contractor Spend','Overtime Reduction','Total Value'],labels:{useHTML:true,y:16,style:{fontSize:'9.5px',fontWeight:'700',color:'#8f93a3',lineHeight:'1.05',textAlign:'center'},rotation:0,formatter:function(){var label=String(this.value);return '<span title="'+label+'" style="display:block;width:98px;max-width:98px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.05">'+label+'</span>';}}},
+      _hc('iv2-hc-vb', { chart:{type:'columnrange',height:260,spacing:[8,6,0,4],marginLeft:48,marginBottom:34}, xAxis:{categories:['Baseline','OEE Recovery','Maintenance Cost','Contractor Spend','Overtime Reduction','Total Value'],labels:{useHTML:true,y:18,style:{fontSize:'9.5px',fontWeight:'700',color:'#8f93a3',lineHeight:'1.05',textAlign:'center'},rotation:0,formatter:function(){var label=String(this.value);return '<span title="'+label+'" style="display:block;width:98px;max-width:98px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.05">'+label+'</span>';}}},
         yAxis:{visible:true,min:0,max:vbAxisMax,tickInterval:200,title:{text:null},gridLineColor:'#e8ecf3',gridLineWidth:1,lineColor:'#dbe1ea',lineWidth:1,labels:{formatter:function(){return '$'+this.value+'K';},style:{fontSize:'10px',fontWeight:'700',color:'#636a78'},x:-6},plotLines:[{value:0,color:'#dbe1ea',width:2,zIndex:3}]}, legend:{enabled:false},
         tooltip:{pointFormatter:function(){return '<span style="color:'+this.color+'">●</span> '+this.category+': <b>$'+this.custom.value+'K</b><br/>';}},
         plotOptions:{columnrange:{borderRadius:4,groupPadding:0.08,pointPadding:0.06,dataLabels:{enabled:true,inside:false,crop:false,overflow:'allow',formatter:function(){return this.y === this.point.high && this.point.high > this.point.low ? this.point.custom.label : '';},style:{fontSize:'11px',fontWeight:'800',color:'#141827',textOutline:'none'}}}},
@@ -15905,6 +15926,10 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
       'Value Bridge': {
         desc: 'Waterfall showing cumulative value delivered from OEE recovery, maintenance labor savings, contractor reduction, and overtime reduction.',
         tips: ['OEE recovery is typically the largest value driver.','Contractor and OT reductions are fixed-cost takeouts.','Remaining opportunity shows unrealized value at target OEE.']
+      },
+      'Executive Narrative': {
+        desc: 'Three-point executive summary tying the value bridge to maintenance execution and the recommended capacity path.',
+        tips: ['Use it as the top-line story for leadership.','Point 1 anchors value delivered, point 2 explains operational proof, point 3 states the recommended action.','It should reconcile with the Value Bridge and Capacity Reallocation cards.']
       },
       'Unplanned Downtime': {
         desc: 'Monthly unplanned equipment downtime in hours. Red bars indicate months above 80% of baseline, green indicates significant reduction.',
@@ -15994,6 +16019,7 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
         'OEE Month-over-Month': ['What is driving the OEE increase?','Which line has the lowest OEE?','How does A\u00b7P\u00b7Q break down?'],
         'Planned vs. Actual Hours': ['Why is actual higher than planned?','Which work center has the biggest gap?','How can we improve estimation?'],
         'Value Bridge': ['What is the biggest value driver?','How much more can we capture?','Break down the OEE recovery.'],
+        'Executive Narrative': ['What is the headline takeaway?','Why is cost takeout recommended?','What evidence supports this?'],
         'Unplanned Downtime': ['What caused the spike in Dec?','Which assets have most downtime?','How does this compare to target?'],
         'Scrap & Rework Cost': ['Is scrap or rework the bigger issue?','Which line produces the most scrap?','What is the reduction trend?'],
         'Cost Category Trends': ['Which cost is declining fastest?','Why is contractor spend still high?','What drives breakdown count?'],
@@ -16054,6 +16080,11 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
           if (ql.indexOf('biggest') >= 0 || ql.indexOf('driver') >= 0 || ql.indexOf('largest') >= 0) return 'The biggest value driver is <strong>OEE Recovery</strong> — each OEE point translates to ~$18K in recovered throughput and margin. This accounts for more than half of total value delivered.';
           if (ql.indexOf('more') >= 0 || ql.indexOf('capture') >= 0 || ql.indexOf('potential') >= 0) return 'There are still <strong>4 OEE points</strong> to close to reach target — representing ~$72K/mo in available value. Additionally, 210 hrs of backlog could be redeployed to PM or fixed cost reduction for another ~$4K.';
           return 'The Value Bridge shows cumulative gains across OEE recovery, maintenance labor, contractor spend reduction, and overtime reduction — totaling verified operational value delivered over the period.';
+        },
+        'Executive Narrative': function() {
+          if (ql.indexOf('cost') >= 0 || ql.indexOf('recommend') >= 0) return 'Cost takeout is recommended because freed internal capacity can replace routine contractor and overtime coverage without adding capital. It gives the clearest near-term P&L impact while the reliability work continues.';
+          if (ql.indexOf('evidence') >= 0 || ql.indexOf('support') >= 0 || ql.indexOf('why') >= 0) return 'The support is the linked chain: verified value in the bridge, tighter planned-vs-actual execution, lower contractor spend, and a defined capacity pool that can be reallocated.';
+          return 'The headline is: <strong>value has already been verified</strong>, execution discipline is improving, and the next decision is how to convert freed capacity into either reliability, backlog acceleration, or fixed-cost reduction.';
         },
         'Unplanned Downtime': function() {
           if (ql.indexOf('spike') >= 0 || ql.indexOf('high') >= 0 || ql.indexOf('worst') >= 0) return 'The highest downtime months typically correlate with <strong>seasonal demand peaks</strong> and deferred PM during production pushes. Equipment that missed PM windows shows 3× higher failure rates in the following month.';
