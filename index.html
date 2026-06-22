@@ -3512,6 +3512,7 @@
     .iv2-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
     .iv2-drill-grid { grid-auto-flow: row; align-items: stretch; }
     .iv2-drill-grid > .iv2-widget { min-width: 0; }
+    .iv2-drill-grid > .iv2-widget.iv2-wide-drill { grid-column: 1 / -1; }
     .iv2-drill-grid > .iv2-widget.iv2-drill {
       border-color: #dfe4f2;
       background: linear-gradient(180deg, #ffffff 0%, #fcfdff 100%);
@@ -16075,7 +16076,7 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
       ].forEach(function(cc){h+='<div class="iv2-cc-cell"><div class="iv2-cc-title">'+cc.t+'</div><div class="iv2-cc-val-row"><div class="iv2-cc-val">'+cc.v+'</div><div class="iv2-cc-delta" style="color:#1c8d4f">'+cc.d+'</div></div><div id="'+cc.id+'" style="height:70px"></div></div>';});
       h += '</div></div></div>';
       h += '<div class="iv2-widget iv2-drill" data-cat="operations" data-driver="oee opportunity"><div class="iv2-widget-hdr"><div class="iv2-widget-title">Line-by-Line OEE Contribution '+_catBadge('operations')+'</div><div class="iv2-widget-badge green">$'+Math.round(lineTotalRecov)+'K recovered</div>'+_siaIcon('Line-by-Line OEE')+'</div><div class="iv2-widget-body"><div class="iv2-drill-from"><span class="material-icons-outlined">account_tree</span>Value Bridge: line contribution</div><div id="iv2-hc-oee-line" style="height:220px"></div></div></div>';
-      h += '<div class="iv2-widget iv2-drill" data-cat="operations" data-driver="oee opportunity"><div class="iv2-widget-hdr"><div class="iv2-widget-title">Cost Per Good Unit '+_catBadge('operations')+'</div><div class="iv2-widget-badge green">\u25bc $'+cpguDelta+'</div>'+_siaIcon('Cost Per Good Unit')+'</div><div class="iv2-widget-body"><div class="iv2-drill-from"><span class="material-icons-outlined">account_tree</span>Value Bridge: unit economics</div>';
+      h += '<div class="iv2-widget iv2-drill iv2-wide-drill" data-cat="operations" data-driver="oee opportunity"><div class="iv2-widget-hdr"><div class="iv2-widget-title">Cost Per Good Unit '+_catBadge('operations')+'</div><div class="iv2-widget-badge green">\u25bc $'+cpguDelta+'</div>'+_siaIcon('Cost Per Good Unit')+'</div><div class="iv2-widget-body"><div class="iv2-drill-from"><span class="material-icons-outlined">account_tree</span>Value Bridge: unit economics</div>';
       h += '<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px"><span style="font-size:28px;font-weight:800;color:#2a2b30">$'+cpguNow.toFixed(1)+'</span><span style="font-size:12px;color:#8f93a3">per unit</span><span style="font-size:11px;font-weight:600;color:#1c8d4f;margin-left:auto">Target: $'+cpguTarget.toFixed(1)+'</span></div>';
       h += '<div id="iv2-hc-cpgu" style="height:190px"></div></div></div>';
       h += '</div>';
