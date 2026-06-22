@@ -3713,6 +3713,37 @@
       color: #2a2b30; line-height: 1.34; flex: 1;
     }
     .iv2-ai-text strong { font-weight: 700; }
+    .iv2-cap-narrative {
+      background: #ffffff;
+      border: 1px solid #e2e4e9;
+      border-radius: 8px;
+      box-shadow: none;
+      margin: 0 0 8px;
+    }
+    .iv2-cap-narrative .iv2-ai-hdr {
+      padding: 7px 9px 5px;
+      border-bottom: 1px solid #eff1f5;
+    }
+    .iv2-cap-narrative .iv2-ai-body {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      padding: 5px 9px 7px;
+    }
+    .iv2-cap-narrative .iv2-ai-row {
+      min-height: 0;
+      padding: 6px 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+    }
+    .iv2-cap-narrative .iv2-ai-row + .iv2-ai-row { border-top: 1px solid #eff1f5; }
+    .iv2-cap-narrative .iv2-ai-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 5px;
+      margin-top: 1px;
+    }
     /* Widget title — consistent with Weekly (14px bold, no uppercase, no icons) */
     .iv2-widget-title {
       font-size: 14px; font-weight: 700; text-transform: none; letter-spacing: 0;
@@ -3769,12 +3800,11 @@
       display: grid;
       grid-template-columns: minmax(0, 1.45fr) minmax(360px, 0.95fr);
       grid-template-areas:
-        "bridge capacity"
-        "narrative narrative";
+        "bridge capacity";
       gap: 12px; margin-bottom: 24px; align-items: stretch;
     }
     .iv2-foundation-main { display: contents; }
-    .iv2-foundation-main .iv2-ai-summary { grid-area: narrative; margin-bottom: 0; }
+    .iv2-foundation-main > .iv2-ai-summary { grid-area: narrative; margin-bottom: 0; }
     #iv2-value-bridge { grid-area: bridge; }
     #iv2-capacity { grid-area: capacity; }
     #iv2-value-bridge,
@@ -3841,8 +3871,7 @@
         grid-template-columns: 1fr;
         grid-template-areas:
           "bridge"
-          "capacity"
-          "narrative";
+          "capacity";
       }
       .iv2-grid { grid-template-columns: 1fr 1fr; }
     }
@@ -15706,18 +15735,18 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
        {d:'#ffab40',bg:'rgba(255,171,64,0.06)',bd:'rgba(255,171,64,0.26)',t:'210 hrs backlog \u2014 30% redeployable to PM or fixed cost reduction',v:'$'+_v3v(4,2,8)+'K'}
       ].forEach(function(l){h+='<div class="iv2-vb-line" style="--iv2-vb-row-bg:'+l.bg+';--iv2-vb-row-border:'+l.bd+'"><div class="iv2-vb-line-dot" style="background:'+l.d+'"></div><div class="iv2-vb-line-text">'+l.t+'</div><div class="iv2-vb-line-val">'+l.v+'</div></div>';});
       h += '</div></div></div>';
-      h += '<div class="iv2-ai-summary" data-cat="">';
+      h += '</div>';
+
+      var capHrs = _v3v(74, 50, 100);
+      h += '<div class="iv2-widget iv2-primary" data-cat="" id="iv2-capacity"><div class="iv2-widget-hdr"><div class="iv2-widget-title">Capacity Reallocation \u2014 Choose Your Path</div>'+_siaIcon('Capacity Reallocation')+'</div><div class="iv2-widget-body" style="overflow-y:auto">';
+      h += '<div class="iv2-primary-note"><span><strong>' + capHrs + ' hrs/mo freed</strong> from efficiency gains can be converted into reliability, backlog acceleration, or fixed-cost reduction.</span></div>';
+      h += '<div class="iv2-ai-summary iv2-cap-narrative" data-cat="">';
       h += '<div class="iv2-ai-hdr"><div class="iv2-ai-title-row"><span class="material-icons-outlined" style="font-size:13px;color:#3d5afe">auto_awesome</span><span class="iv2-ai-title">Executive Narrative</span></div></div>';
       h += '<div class="iv2-ai-body">';
       h += '<div class="iv2-ai-row"><div class="iv2-ai-dot">1</div><div class="iv2-ai-text">Past ' + mc + ' months delivered <strong>$' + vbTotal + 'K</strong> in verified value. OEE moved <strong>' + Math.abs(oeeDelta) + ' pts</strong>, led by availability gains on Lines 1, 3, and 4.</div></div>';
       h += '<div class="iv2-ai-row"><div class="iv2-ai-dot">2</div><div class="iv2-ai-text">Maintenance execution tightened: planned vs. actual gap closed <strong>' + gapClosed + ' hrs</strong>, contractor spend fell <strong>$' + Math.round(contrVals[0] - contrVals[nPts-1]) + 'K/mo</strong>, and downtime shifted from <strong>' + dtVals[0] + 'h</strong> to <strong>' + dtVals[nPts-1] + 'h</strong>.</div></div>';
       h += '<div class="iv2-ai-row"><div class="iv2-ai-dot">3</div><div class="iv2-ai-text">Recommended path: <strong>fixed cost elimination</strong>. With ' + laborFreed + ' hrs/mo freed, cap contractors and OT at emergency-only to unlock about <strong>$92K/yr</strong>.</div></div>';
       h += '</div></div>';
-      h += '</div>';
-
-      var capHrs = _v3v(74, 50, 100);
-      h += '<div class="iv2-widget iv2-primary" data-cat="" id="iv2-capacity"><div class="iv2-widget-hdr"><div class="iv2-widget-title">Capacity Reallocation \u2014 Choose Your Path</div>'+_siaIcon('Capacity Reallocation')+'</div><div class="iv2-widget-body" style="overflow-y:auto">';
-      h += '<div class="iv2-primary-note"><span><strong>' + capHrs + ' hrs/mo freed</strong> from efficiency gains can be converted into reliability, backlog acceleration, or fixed-cost reduction.</span></div>';
       var capScenarios = [
         {i:'build',bg:'#fff3e0',c:'#b5792d',t:'Drive Down Unplanned Downtime',s:'Redeploy to Predictive & Preventive Execution',v:'$'+_v3v(72,50,95)+'K',
          detail:'Redeploy freed hours to predictive inspections and PM execution \u2014 reducing unplanned downtime events by an estimated 40% within 3 months.',
