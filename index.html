@@ -3786,19 +3786,84 @@
       margin-top: 5px;
     }
     .iv2-driver-chip {
-      display: inline-flex; align-items: center; gap: 6px;
-      height: 26px; padding: 0 8px; border: 1px solid #dfe4f2; border-radius: 6px;
+      display: inline-flex; align-items: center; gap: 8px;
+      height: 32px; padding: 0 13px; border: 1px solid #dfe4f2; border-radius: 8px;
       background: #fff; color: #525560; font-family: var(--font-roboto);
-      font-size: 11.5px; font-weight: 600; cursor: pointer;
+      font-size: 14px; font-weight: 600; cursor: pointer;
       box-shadow: 0 1px 2px rgba(25, 34, 64, 0.04);
       transition: border-color 0.15s, background 0.15s, color 0.15s, box-shadow 0.15s;
+      white-space: nowrap;
     }
-    .iv2-driver-chip:hover,
+    .iv2-driver-chip:hover {
+      border-color: #c3ccff; background: #fbfcff; color: #3d5afe;
+      box-shadow: 0 2px 5px rgba(61, 90, 254, 0.08);
+    }
     .iv2-driver-chip.active {
       border-color: #3d5afe; background: #ecefff; color: #3d5afe;
       box-shadow: 0 2px 5px rgba(61, 90, 254, 0.12);
     }
-    .iv2-driver-chip .material-icons-outlined { font-size: 14px; }
+    .iv2-driver-chip .material-icons-outlined { font-size: 18px; }
+    .iv2-drill-empty {
+      grid-column: 1 / -1;
+      min-height: 236px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 24px;
+      border: 1px dashed #cfd7ee;
+      border-radius: 10px;
+      background: #fff;
+      box-shadow: 0 1px 4px rgba(25, 34, 64, 0.05);
+      text-align: center;
+    }
+    .iv2-empty-illustration {
+      position: relative;
+      width: 144px;
+      height: 76px;
+      margin-bottom: 2px;
+    }
+    .iv2-empty-node {
+      position: absolute;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #dbe1ff;
+      background: #f6f7ff;
+      color: #3d5afe;
+      box-shadow: 0 2px 6px rgba(61, 90, 254, 0.08);
+    }
+    .iv2-empty-node-main {
+      left: 50%;
+      top: 18px;
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      transform: translateX(-50%);
+    }
+    .iv2-empty-node-main .material-icons-outlined { font-size: 22px; }
+    .iv2-empty-node-dot {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+    }
+    .iv2-empty-node-dot:nth-child(2) { left: 4px; top: 6px; color: #3d5afe; }
+    .iv2-empty-node-dot:nth-child(3) { right: 4px; top: 6px; color: #1c8d4f; background: #f2fbf6; border-color: #cfeedd; }
+    .iv2-empty-node-dot:nth-child(4) { left: 22px; bottom: 2px; color: #b5792d; background: #fff7ec; border-color: #ffe0b5; }
+    .iv2-empty-node-dot:nth-child(5) { right: 22px; bottom: 2px; color: #525560; background: #fbfcff; border-color: #e2e4e9; }
+    .iv2-empty-title {
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1.2;
+      color: #2a2b30;
+    }
+    .iv2-empty-copy {
+      max-width: 420px;
+      font-size: 12px;
+      line-height: 1.45;
+      color: #666975;
+    }
     .iv2-foundation {
       display: grid;
       grid-template-columns: minmax(0, 1fr) calc(40% - 4.8px);
@@ -3892,6 +3957,29 @@
       color: #666975; margin-bottom: 2px;
     }
     .iv2-drill-title { font-size: 15px; line-height: 1.2; font-weight: 700; color: #2a2b30; }
+    .iv2-drill-toggle {
+      position: relative; flex-shrink: 0; display: inline-flex; align-items: center; gap: 8px;
+      height: 32px; padding: 4px 8px 4px 10px; border: 1px solid #dfe4f2; border-radius: 8px;
+      background: #fff; color: #525560; font-size: 11px; font-weight: 700; line-height: 1;
+      box-shadow: 0 1px 3px rgba(25, 34, 64, 0.06); cursor: pointer; user-select: none;
+      white-space: nowrap;
+    }
+    .iv2-drill-toggle input {
+      position: absolute; opacity: 0; pointer-events: none;
+    }
+    .iv2-toggle-track {
+      width: 34px; height: 18px; border-radius: 999px; padding: 2px;
+      background: #dfe4f2; transition: background 0.15s, box-shadow 0.15s;
+    }
+    .iv2-toggle-knob {
+      display: block; width: 14px; height: 14px; border-radius: 50%; background: #fff;
+      box-shadow: 0 1px 2px rgba(25, 34, 64, 0.28); transition: transform 0.15s;
+    }
+    .iv2-drill-toggle input:checked + .iv2-toggle-track { background: #3d5afe; }
+    .iv2-drill-toggle input:checked + .iv2-toggle-track .iv2-toggle-knob { transform: translateX(16px); }
+    .iv2-drill-toggle input:focus-visible + .iv2-toggle-track {
+      box-shadow: 0 0 0 3px rgba(61, 90, 254, 0.18);
+    }
     .iv2-widget .iv2-drill-from {
       display: inline-flex; align-items: center; gap: 5px; width: fit-content;
       margin-bottom: 10px; padding: 3px 8px; border-radius: 6px;
@@ -4054,8 +4142,8 @@
       #module-impactv2 .v3-seg::-webkit-scrollbar { display: none; }
       .iv2-drill-filter-row { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
       .iv2-drill-filter-row::-webkit-scrollbar { display: none; }
-      .iv2-driver-chip { flex: 0 0 auto; height: 28px; padding: 0 8px; font-size: 11px; gap: 4px; }
-      .iv2-driver-chip .material-icons-outlined { font-size: 14px; }
+      .iv2-driver-chip { flex: 0 0 auto; height: 32px; padding: 0 12px; font-size: 13px; gap: 7px; }
+      .iv2-driver-chip .material-icons-outlined { font-size: 17px; }
       .iv2-action-row { grid-template-columns: 1fr; }
       .iv2-action-topbar { padding: 0 12px; }
       .iv2-action-page-title { font-size: 12px; }
@@ -15846,6 +15934,7 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
 
     /* ─── IMPACT V2 MODULE ─── */
     var _iv2Rendered = false;
+    var _iv2HideDrillDefault = true;
 
     function iv2SelSeg(btn) {
       btn.parentNode.querySelectorAll('.v3-seg-btn').forEach(function(b) { b.classList.remove('active'); });
@@ -15856,20 +15945,59 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
       _iv2Rendered = false;
       renderImpactV2();
     }
-    function iv2FilterDriver(driver, btn, forceActive) {
-      var isActive = !forceActive && btn && btn.classList.contains('active');
-      document.querySelectorAll('#iv2-driver-filters .iv2-driver-chip').forEach(function(c) { c.classList.remove('active'); });
-      var activeDriver = isActive ? '' : driver;
-      if (btn && activeDriver) btn.classList.add('active');
+    function iv2ActiveDriver() {
+      var active = document.querySelector('#iv2-driver-filters .iv2-driver-chip.active');
+      return active ? (active.getAttribute('data-driver-filter') || '') : '';
+    }
+    function iv2ScrollParent(el) {
+      var node = el && el.parentElement;
+      while (node && node !== document.body) {
+        var style = window.getComputedStyle ? window.getComputedStyle(node) : null;
+        var overflowY = style ? style.overflowY : '';
+        if ((overflowY === 'auto' || overflowY === 'scroll') && node.scrollHeight > node.clientHeight) return node;
+        node = node.parentElement;
+      }
+      return document.scrollingElement || document.documentElement;
+    }
+    function iv2RestoreAnchor(anchor, scroller, beforeTop) {
+      if (!anchor || !scroller || typeof beforeTop !== 'number') return;
+      var afterTop = anchor.getBoundingClientRect().top;
+      var delta = afterTop - beforeTop;
+      if (Math.abs(delta) < 1) return;
+      if (scroller === document.scrollingElement || scroller === document.documentElement || scroller === document.body) window.scrollBy(0, delta);
+      else scroller.scrollTop += delta;
+    }
+    function iv2ApplyDriverVisibility(activeDriver, preservePosition) {
+      if (typeof activeDriver === 'undefined') activeDriver = iv2ActiveDriver();
+      var anchor = preservePosition ? document.getElementById('iv2-drilldowns') : null;
+      var scroller = anchor ? iv2ScrollParent(anchor) : null;
+      var beforeTop = anchor ? anchor.getBoundingClientRect().top : null;
+      var showEmpty = _iv2HideDrillDefault && !activeDriver;
+      var empty = document.getElementById('iv2-drill-empty');
+      if (empty) empty.classList.toggle('iv2-hidden', !showEmpty);
       document.querySelectorAll('#iv2-widgets .iv2-widget.iv2-drill').forEach(function(card) {
         var drivers = (card.getAttribute('data-driver') || '').split(/\s+/);
-        card.classList.toggle('iv2-hidden', !!activeDriver && drivers.indexOf(activeDriver) === -1);
+        var hideForDefault = showEmpty;
+        var hideForDriver = !!activeDriver && drivers.indexOf(activeDriver) === -1;
+        card.classList.toggle('iv2-hidden', hideForDefault || hideForDriver);
       });
+      if (anchor) requestAnimationFrame(function() { iv2RestoreAnchor(anchor, scroller, beforeTop); });
       setTimeout(function() {
         if (window.Highcharts && Highcharts.charts) {
           Highcharts.charts.forEach(function(chart) { if (chart) chart.reflow(); });
         }
       }, 0);
+    }
+    function iv2ToggleDrillDefault(input) {
+      _iv2HideDrillDefault = !!(input && input.checked);
+      iv2ApplyDriverVisibility();
+    }
+    function iv2FilterDriver(driver, btn, forceActive) {
+      var isActive = !forceActive && btn && btn.classList.contains('active');
+      document.querySelectorAll('#iv2-driver-filters .iv2-driver-chip').forEach(function(c) { c.classList.remove('active'); });
+      var activeDriver = isActive ? '' : driver;
+      if (btn && activeDriver) btn.classList.add('active');
+      iv2ApplyDriverVisibility(activeDriver, isActive);
     }
     function iv2JumpToDriver(driver, evt) {
       if (evt) {
@@ -16161,13 +16289,14 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
       h += '</div>';
       h += '</div>';
 
-      h += '<div class="iv2-drill-header" id="iv2-drilldowns"><div><div class="iv2-drill-kicker">Drill-down evidence</div><div class="iv2-drill-title">Trace each gain back to its operational driver</div><div class="iv2-drill-filter-row" id="iv2-driver-filters" aria-label="Drill-down metric filters">';
+      h += '<div class="iv2-drill-header" id="iv2-drilldowns"><div><div class="iv2-drill-kicker">Drill-down evidence</div><div class="iv2-drill-title">Trace each value drivers back to its contributors</div><div class="iv2-drill-filter-row" id="iv2-driver-filters" aria-label="Drill-down metric filters">';
       h += '<button class="iv2-driver-chip" data-driver-filter="oee" onclick="iv2FilterDriver(\'oee\',this)"><span class="material-icons-outlined">query_stats</span>OEE Improvement</button>';
       h += '<button class="iv2-driver-chip" data-driver-filter="labor" onclick="iv2FilterDriver(\'labor\',this)"><span class="material-icons-outlined">engineering</span>Maint. Labor Saved</button>';
       h += '<button class="iv2-driver-chip" data-driver-filter="pmcm" onclick="iv2FilterDriver(\'pmcm\',this)"><span class="material-icons-outlined">sync_alt</span>PM:CM Ratio</button>';
-      h += '</div></div></div>';
+      h += '</div></div><label class="iv2-drill-toggle"><span>Hide widgets by default</span><input type="checkbox" onchange="iv2ToggleDrillDefault(this)"' + (_iv2HideDrillDefault ? ' checked' : '') + '><span class="iv2-toggle-track"><span class="iv2-toggle-knob"></span></span></label></div>';
 
       h += '<div class="iv2-grid iv2-drill-grid" id="iv2-drill-grid">';
+      h += '<div class="iv2-drill-empty" id="iv2-drill-empty"><div class="iv2-empty-illustration" aria-hidden="true"><div class="iv2-empty-node iv2-empty-node-main"><span class="material-icons-outlined">account_tree</span></div><div class="iv2-empty-node iv2-empty-node-dot"></div><div class="iv2-empty-node iv2-empty-node-dot"></div><div class="iv2-empty-node iv2-empty-node-dot"></div><div class="iv2-empty-node iv2-empty-node-dot"></div></div><div class="iv2-empty-title">Select a value driver</div><div class="iv2-empty-copy">Choose OEE Improvement, Maint. Labor Saved, or PM:CM Ratio to view the supporting drill-down widgets.</div></div>';
       h += '<div class="iv2-widget iv2-drill" data-cat="operations" data-driver="oee"><div class="iv2-widget-hdr"><div class="iv2-widget-title">OEE Month-over-Month '+_catBadge('operations')+'</div><div class="iv2-widget-badge green">\u2197 +' + Math.abs(oeeDelta) + ' pts</div>'+_siaIcon('OEE Month-over-Month')+'</div><div class="iv2-widget-body"><div class="iv2-drill-from"><span class="material-icons-outlined">account_tree</span>Value Bridge: OEE recovery</div><div id="iv2-hc-oee" style="height:180px"></div>';
       h += '<div style="font-size:11px;font-weight:700;color:#8f93a3;letter-spacing:0.5px;margin:6px 0 6px">A \u00b7 P \u00b7 Q  IMPROVEMENT</div>';
       [{l:'Availability',v:avail,p:availPrev,c:'#d92d20'},{l:'Performance',v:perf,p:perfPrev,c:'#ffab40'},{l:'Quality',v:qual,p:qualPrev,c:'#1c8d4f'}].forEach(function(a){
@@ -16284,6 +16413,7 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
         tooltip:{valuePrefix:'$'},
         series:[{name:'Cost/unit',data:cpguVals,color:'#3d5afe'}] });
 
+      iv2ApplyDriverVisibility();
       iv2EnsureFontBumpObserver();
       iv2ApplyFontBump(document.getElementById('module-impactv2'));
     }
