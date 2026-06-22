@@ -15933,6 +15933,52 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
         legend:{enabled:false}, plotOptions:{areaspline:{fillOpacity:0.08,marker:{enabled:true,radius:4,lineWidth:2,lineColor:'#3d5afe',fillColor:'#fff'},dataLabels:{enabled:true,format:'${y:.1f}',style:{fontSize:'9px'}}}},
         tooltip:{valuePrefix:'$'},
         series:[{name:'Cost/unit',data:cpguVals,color:'#3d5afe'}] });
+
+      iv2EnsureFontBumpObserver();
+      iv2ApplyFontBump(document.getElementById('module-impactv2'));
+    }
+
+    var _iv2FontBumpObserver = null;
+    function iv2HasDirectText(el) {
+      if (!el || !el.childNodes) return false;
+      var tag = (el.tagName || '').toLowerCase();
+      if (tag === 'input' || tag === 'textarea' || tag === 'select' || tag === 'option' || tag === 'text' || tag === 'tspan') return true;
+      for (var i = 0; i < el.childNodes.length; i++) {
+        var node = el.childNodes[i];
+        if (node.nodeType === 3 && node.nodeValue && node.nodeValue.trim()) return true;
+      }
+      return false;
+    }
+    function iv2ApplyFontBump(root) {
+      if (!root || !window.getComputedStyle) return;
+      var nodes = [];
+      if (root.nodeType === 1) nodes.push(root);
+      if (root.querySelectorAll) nodes = nodes.concat(Array.prototype.slice.call(root.querySelectorAll('*')));
+      var targets = [];
+      nodes.forEach(function(el) {
+        if (!el || (el.dataset && el.dataset.iv2FontBumped === 'true')) return;
+        if (el.classList && (el.classList.contains('material-icons') || el.classList.contains('material-icons-outlined'))) return;
+        if (!iv2HasDirectText(el)) return;
+        var size = parseFloat(window.getComputedStyle(el).fontSize);
+        if (!size || isNaN(size)) return;
+        targets.push({ el: el, size: size });
+      });
+      targets.forEach(function(item) {
+        item.el.style.setProperty('font-size', (item.size + 2).toFixed(1).replace('.0', '') + 'px', 'important');
+        if (item.el.dataset) item.el.dataset.iv2FontBumped = 'true';
+      });
+    }
+    function iv2EnsureFontBumpObserver() {
+      var module = document.getElementById('module-impactv2');
+      if (!module || _iv2FontBumpObserver) return;
+      _iv2FontBumpObserver = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          Array.prototype.forEach.call(mutation.addedNodes || [], function(node) {
+            if (node.nodeType === 1) iv2ApplyFontBump(node);
+          });
+        });
+      });
+      _iv2FontBumpObserver.observe(module, { childList: true, subtree: true });
     }
 
     function _iv2Kpi(label, value, color, sub, driver) {
@@ -15980,6 +16026,7 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
         + '<div class="iv2-action-panel-footer"><button type="button" class="iv2-action-secondary" onclick="iv2CloseActionDraft()">Cancel</button><button type="button" class="iv2-action-primary" onclick="iv2SaveActionDraft()">Save Draft</button></div>'
         + '</div></div>';
       document.body.appendChild(modal);
+      iv2ApplyFontBump(modal);
       var title = document.getElementById('iv2-action-title');
       if (title) title.focus();
     }
@@ -15998,6 +16045,7 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
       toast.id = 'iv2-action-toast';
       toast.textContent = 'Action draft prepared';
       document.body.appendChild(toast);
+      iv2ApplyFontBump(toast);
       window.setTimeout(function() {
         if (toast && toast.parentNode) toast.parentNode.removeChild(toast);
       }, 2200);
