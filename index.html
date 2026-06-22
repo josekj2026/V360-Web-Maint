@@ -3945,6 +3945,7 @@
       line-height: 1.35;
       text-align: left;
     }
+    .iv2-primary-note-extra .iv2-red-value { color: #d92d20; }
     .iv2-drill-header {
       display: flex; align-items: center; justify-content: space-between; gap: 16px;
       margin: 16px 0 10px; padding: 0;
@@ -16036,6 +16037,27 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
         oee: 'rgba(61,90,254,0.42)',
         labor: 'rgba(28,141,79,0.45)'
       };
+      var bindBridgeTarget = function(el, driver, slug) {
+        if (!el || el.getAttribute('data-iv2-bound') === 'true') return;
+        el.setAttribute('data-iv2-bound', 'true');
+        el.setAttribute('role', 'button');
+        el.setAttribute('tabindex', '0');
+        el.setAttribute('aria-label', 'Show ' + (driver === 'oee' ? 'OEE Improvement' : 'Maint. Labor Saved') + ' drill-down');
+        el.style.cursor = 'pointer';
+        el.style.pointerEvents = 'auto';
+        var highlight = function(isOn) {
+          var hot = chart.renderTo.querySelector('.iv2-vb-hotspot-' + slug);
+          if (!hot) return;
+          hot.setAttribute('fill', isOn ? (hoverFill[driver] || 'rgba(61,90,254,0.10)') : 'rgba(61,90,254,0.001)');
+          hot.setAttribute('stroke', isOn ? (hoverStroke[driver] || 'rgba(61,90,254,0.42)') : 'transparent');
+        };
+        el.addEventListener('click', function(e) { iv2JumpToDriver(driver, e); });
+        el.addEventListener('mouseover', function() { highlight(true); });
+        el.addEventListener('mouseout', function() { highlight(false); });
+        el.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') iv2JumpToDriver(driver, e);
+        });
+      };
       series.points.forEach(function(point) {
         var driver = point.custom && point.custom.driver;
         if (!driver) return;
@@ -16047,6 +16069,12 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
         var width = Math.max(1, shape.width || 0);
         var height = Math.max(6, Math.abs(baseline - top));
         var slug = String(point.category).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        var highlightBar = function(isOn) {
+          rect.attr({
+            fill: isOn ? (hoverFill[driver] || 'rgba(61,90,254,0.10)') : 'rgba(61,90,254,0.001)',
+            stroke: isOn ? (hoverStroke[driver] || 'rgba(61,90,254,0.42)') : 'transparent'
+          });
+        };
         var rect = chart.renderer.rect(left, y, width, height, shape.r || 4)
           .attr({
             class: 'iv2-vb-hotspot iv2-vb-hotspot-' + driver + ' iv2-vb-hotspot-' + slug,
@@ -16058,32 +16086,48 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
           })
           .css({ cursor: 'pointer' })
           .on('click', function(e) { iv2JumpToDriver(driver, e); })
-          .on('mouseover', function() { rect.attr({ fill: hoverFill[driver] || 'rgba(61,90,254,0.10)', stroke: hoverStroke[driver] || 'rgba(61,90,254,0.42)' }); })
-          .on('mouseout', function() { rect.attr({ fill: 'rgba(61,90,254,0.001)', stroke: 'transparent' }); })
+          .on('mouseover', function() { highlightBar(true); })
+          .on('mouseout', function() { highlightBar(false); })
           .on('keydown', function(e) {
             if (e && (e.key === 'Enter' || e.key === ' ')) iv2JumpToDriver(driver, e);
           })
           .add(group);
+        chart.renderer.rect(left + (width / 2) - 44, Math.max(chart.plotTop, top - 34), 88, 28, 6)
+          .attr({
+            class: 'iv2-vb-label-hotspot iv2-vb-label-hotspot-' + driver + ' iv2-vb-label-hotspot-' + slug,
+            fill: 'rgba(61,90,254,0.001)',
+            stroke: 'transparent',
+            'aria-label': 'Show ' + (driver === 'oee' ? 'OEE Improvement' : 'Maint. Labor Saved') + ' drill-down from ' + point.custom.label,
+            tabindex: 0
+          })
+          .css({ cursor: 'pointer' })
+          .on('click', function(e) { iv2JumpToDriver(driver, e); })
+          .on('mouseover', function() { highlightBar(true); })
+          .on('mouseout', function() { highlightBar(false); })
+          .on('keydown', function(e) {
+            if (e && (e.key === 'Enter' || e.key === ' ')) iv2JumpToDriver(driver, e);
+          })
+          .add(group);
+        var dataLabelEls = [];
+        if (point.dataLabel && point.dataLabel.element) dataLabelEls.push(point.dataLabel.element);
+        if (point.dataLabels && point.dataLabels.length) {
+          point.dataLabels.forEach(function(item) {
+            if (item && item.element && dataLabelEls.indexOf(item.element) === -1) dataLabelEls.push(item.element);
+          });
+        }
+        dataLabelEls.forEach(function(el) {
+          bindBridgeTarget(el, driver, slug);
+          if (el.querySelectorAll) {
+            Array.prototype.forEach.call(el.querySelectorAll('text,tspan'), function(child) {
+              bindBridgeTarget(child, driver, slug);
+            });
+          }
+        });
       });
       Array.prototype.forEach.call(chart.renderTo.querySelectorAll('.iv2-vb-axis-link'), function(label) {
-        if (label.dataset.iv2Bound === 'true') return;
-        label.dataset.iv2Bound = 'true';
         var driver = label.classList.contains('iv2-vb-axis-oee') ? 'oee' : 'labor';
         var slug = String(label.textContent || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-        var highlight = function(isOn) {
-          var hot = chart.renderTo.querySelector('.iv2-vb-hotspot-' + slug);
-          if (!hot) return;
-          hot.setAttribute('fill', isOn ? (hoverFill[driver] || 'rgba(61,90,254,0.10)') : 'rgba(61,90,254,0.001)');
-          hot.setAttribute('stroke', isOn ? (hoverStroke[driver] || 'rgba(61,90,254,0.42)') : 'transparent');
-        };
-        label.addEventListener('click', function(e) {
-          iv2JumpToDriver(driver, e);
-        });
-        label.addEventListener('mouseover', function() { highlight(true); });
-        label.addEventListener('mouseout', function() { highlight(false); });
-        label.addEventListener('keydown', function(e) {
-          if (e.key === 'Enter' || e.key === ' ') iv2JumpToDriver(driver, e);
-        });
+        bindBridgeTarget(label, driver, slug);
       });
       chart.iv2VbHotspots = group;
     }
@@ -16242,7 +16286,7 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
       h += '<div class="iv2-foundation" id="iv2-foundation">';
       h += '<div class="iv2-foundation-main">';
       h += '<div class="iv2-widget iv2-primary" data-cat="" id="iv2-value-bridge"><div class="iv2-widget-hdr"><div class="iv2-widget-title">Value Bridge \u2014 Sources of Gain</div><div class="iv2-widget-badge green">$' + vbTotal + 'K</div>'+_siaIcon('Value Bridge')+'</div><div class="iv2-widget-body">';
-      h += '<div class="iv2-primary-note"><span class="iv2-primary-note-main"><strong>$' + vbTotal + 'K verified value</strong> consolidates OEE recovery, maintenance labor efficiency, contractor reduction, and overtime takeout.<span class="iv2-primary-note-extra">Remaining opportunity: $' + remainOpp + 'K</span></span></div>';
+      h += '<div class="iv2-primary-note"><span class="iv2-primary-note-main"><strong>$' + vbTotal + 'K verified value</strong> consolidates OEE recovery, maintenance labor efficiency, contractor reduction, and overtime takeout.<span class="iv2-primary-note-extra">Remaining opportunity: <span class="iv2-red-value">$' + remainOpp + 'K</span></span></span></div>';
       h += '<div id="iv2-hc-vb" style="height:260px"></div>';
       h += '<div class="iv2-vb-lines">';
       [{d:'#3d5afe',bg:'rgba(61,90,254,0.04)',bd:'rgba(61,90,254,0.18)',t:'+13 OEE pts \u00d7 $18K/pt \u2014 recovered throughput & margin',v:'$'+vbOee+'K'},
