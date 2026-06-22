@@ -15963,7 +15963,7 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
         + _iv2Kpi('OEE Improvement', '+' + Math.abs(oeeDelta) + ' pts', '#3d5afe', oeeStart + '% → ' + oeeNow + '%', 'oee')
         + _iv2Kpi('Maint. Labor Saved', laborFreed + ' hrs/mo', '#2a2b30', '$' + laborCost + 'K/mo labor freed', 'labor')
         + _iv2Kpi('PM:CM Ratio', pmHrs + '%', '#b5792d', 'from 38% — target ' + cmTarget + '%+', 'pmcm')
-        + _iv2Kpi('Remaining Opportunity', '$' + remainOpp + 'K', '#d92d20', 'available at target OEE', 'opportunity')
+        + _iv2Kpi('Remaining Opportunity', '$' + remainOpp + 'K', '#d92d20', 'available at target OEE')
         + '</div>';
 
       // ── Build widget HTML shells with HC containers ──
@@ -16030,7 +16030,6 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
       h += '<button class="iv2-driver-chip" data-driver-filter="oee" onclick="iv2FilterDriver(\'oee\',this)"><span class="material-icons-outlined">query_stats</span>OEE Improvement</button>';
       h += '<button class="iv2-driver-chip" data-driver-filter="labor" onclick="iv2FilterDriver(\'labor\',this)"><span class="material-icons-outlined">engineering</span>Maint. Labor Saved</button>';
       h += '<button class="iv2-driver-chip" data-driver-filter="pmcm" onclick="iv2FilterDriver(\'pmcm\',this)"><span class="material-icons-outlined">sync_alt</span>PM:CM Ratio</button>';
-      h += '<button class="iv2-driver-chip" data-driver-filter="opportunity" onclick="iv2FilterDriver(\'opportunity\',this)"><span class="material-icons-outlined">track_changes</span>Remaining Opportunity</button>';
       h += '</div></div></div>';
 
       h += '<div class="iv2-grid iv2-drill-grid" id="iv2-drill-grid">';
@@ -16133,6 +16132,10 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
       }
       return false;
     }
+    function iv2FontDelta(el) {
+      if (el && el.closest && el.closest('.iv2-kpi-card')) return 2;
+      return 0.5;
+    }
     function iv2ApplyFontBump(root) {
       if (!root || !window.getComputedStyle) return;
       var nodes = [];
@@ -16148,7 +16151,8 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
         targets.push({ el: el, size: size });
       });
       targets.forEach(function(item) {
-        item.el.style.setProperty('font-size', (item.size + 2).toFixed(1).replace('.0', '') + 'px', 'important');
+        var delta = iv2FontDelta(item.el);
+        item.el.style.setProperty('font-size', (item.size + delta).toFixed(1).replace('.0', '') + 'px', 'important');
         if (item.el.dataset) item.el.dataset.iv2FontBumped = 'true';
       });
     }
