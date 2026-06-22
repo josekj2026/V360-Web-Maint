@@ -3807,6 +3807,8 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
+      width: calc(100% + 5px);
+      max-width: calc(100% + 5px);
       height: 100%;
       min-height: 0;
     }
@@ -15674,7 +15676,12 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
       var mc = window._iv2mc;
       var xl = window._iv2xl;
       var nPts = xl.length;
-      function _hc(id, o) { var el = document.getElementById(id); if (el) Highcharts.chart(id, hcMerge(o)); }
+      function _hc(id, o) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        o.tooltip = Object.assign({ headerFormat: '' }, o.tooltip || {});
+        Highcharts.chart(id, hcMerge(o));
+      }
 
       // ── Seeded data ──
       var oeeVals = [], pvaPlanned = [], pvaActual = [], dtVals = [];
@@ -15759,12 +15766,6 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
 
       var capHrs = _v3v(74, 50, 100);
       h += '<div class="iv2-foundation-side">';
-      h += '<div class="iv2-widget iv2-primary" data-cat="" id="iv2-exec-narrative"><div class="iv2-widget-hdr"><div class="iv2-widget-title">Executive Narrative</div>'+_siaIcon('Executive Narrative')+'</div><div class="iv2-widget-body">';
-      h += '<div class="iv2-exec-list"><div class="iv2-ai-body">';
-      h += '<div class="iv2-ai-row"><div class="iv2-ai-dot">1</div><div class="iv2-ai-text">Past ' + mc + ' months delivered <strong>$' + vbTotal + 'K</strong> in verified value. OEE moved <strong>' + Math.abs(oeeDelta) + ' pts</strong>, led by availability gains on Lines 1, 3, and 4.</div></div>';
-      h += '<div class="iv2-ai-row"><div class="iv2-ai-dot">2</div><div class="iv2-ai-text">Maintenance execution tightened: planned vs. actual gap closed <strong>' + gapClosed + ' hrs</strong>, contractor spend fell <strong>$' + Math.round(contrVals[0] - contrVals[nPts-1]) + 'K/mo</strong>, and downtime shifted from <strong>' + dtVals[0] + 'h</strong> to <strong>' + dtVals[nPts-1] + 'h</strong>.</div></div>';
-      h += '<div class="iv2-ai-row"><div class="iv2-ai-dot">3</div><div class="iv2-ai-text">Recommended path: <strong>fixed cost elimination</strong>. With ' + laborFreed + ' hrs/mo freed, cap contractors and OT at emergency-only to unlock about <strong>$92K/yr</strong>.</div></div>';
-      h += '</div></div></div></div>';
       h += '<div class="iv2-widget iv2-primary" data-cat="" id="iv2-capacity"><div class="iv2-widget-hdr"><div class="iv2-widget-title">Capacity Reallocation \u2014 Choose Your Path</div>'+_siaIcon('Capacity Reallocation')+'</div><div class="iv2-widget-body" style="overflow-y:auto">';
       h += '<div class="iv2-primary-note"><span><strong>' + capHrs + ' hrs/mo freed</strong> from efficiency gains can be converted into reliability, backlog acceleration, or fixed-cost reduction.</span></div>';
       var capScenarios = [
@@ -15789,6 +15790,12 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
         h+='</div>';
       });
       h += '</div></div>';
+      h += '<div class="iv2-widget iv2-primary" data-cat="" id="iv2-exec-narrative"><div class="iv2-widget-hdr"><div class="iv2-widget-title">Executive Narrative</div>'+_siaIcon('Executive Narrative')+'</div><div class="iv2-widget-body">';
+      h += '<div class="iv2-exec-list"><div class="iv2-ai-body">';
+      h += '<div class="iv2-ai-row"><div class="iv2-ai-dot">1</div><div class="iv2-ai-text">Past ' + mc + ' months delivered <strong>$' + vbTotal + 'K</strong> in verified value. OEE moved <strong>' + Math.abs(oeeDelta) + ' pts</strong>, led by availability gains on Lines 1, 3, and 4.</div></div>';
+      h += '<div class="iv2-ai-row"><div class="iv2-ai-dot">2</div><div class="iv2-ai-text">Maintenance execution tightened: planned vs. actual gap closed <strong>' + gapClosed + ' hrs</strong>, contractor spend fell <strong>$' + Math.round(contrVals[0] - contrVals[nPts-1]) + 'K/mo</strong>, and downtime shifted from <strong>' + dtVals[0] + 'h</strong> to <strong>' + dtVals[nPts-1] + 'h</strong>.</div></div>';
+      h += '<div class="iv2-ai-row"><div class="iv2-ai-dot">3</div><div class="iv2-ai-text">Recommended path: <strong>fixed cost elimination</strong>. With ' + laborFreed + ' hrs/mo freed, cap contractors and OT at emergency-only to unlock about <strong>$92K/yr</strong>.</div></div>';
+      h += '</div></div></div></div>';
       h += '</div>';
       h += '</div>';
 
