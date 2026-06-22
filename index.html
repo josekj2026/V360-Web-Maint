@@ -3891,23 +3891,6 @@
     .iv2-widget.iv2-drill .iv2-widget-body {
       justify-content: flex-start;
     }
-    .iv2-action-cta {
-      display: flex; align-items: center; justify-content: center; gap: 24px;
-      min-height: 104px; margin: 18px -20px -6px; padding: 26px 20px;
-      background: #ffffff; border-top: 1px solid #e2e4e9; border-bottom: 1px solid #e2e4e9;
-    }
-    .iv2-action-btn {
-      height: 64px; min-width: 196px; padding: 0 28px; border: 0; border-radius: 14px;
-      display: inline-flex; align-items: center; justify-content: center; gap: 12px;
-      color: #fff; font-family: var(--font-roboto); font-size: 22px; font-weight: 700;
-      cursor: pointer; box-shadow: 0 9px 20px rgba(61, 90, 254, 0.18);
-      transition: transform 0.14s ease, box-shadow 0.14s ease, filter 0.14s ease;
-    }
-    .iv2-action-btn:hover { transform: translateY(-1px); box-shadow: 0 12px 24px rgba(61, 90, 254, 0.24); filter: saturate(1.04); }
-    .iv2-action-btn:active { transform: translateY(0); box-shadow: 0 7px 16px rgba(61, 90, 254, 0.18); }
-    .iv2-action-btn .material-icons-outlined { font-size: 29px; line-height: 1; }
-    .iv2-action-btn-sia { background: linear-gradient(135deg, #3d5afe 0%, #8765f5 100%); }
-    .iv2-action-btn-create { min-width: 235px; background: #3d5afe; }
     .iv2-action-modal {
       position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center;
       padding: 24px; background: rgba(25, 34, 64, 0.34);
@@ -3978,9 +3961,6 @@
       .iv2-drill-filter-row::-webkit-scrollbar { display: none; }
       .iv2-driver-chip { flex: 0 0 auto; height: 28px; padding: 0 8px; font-size: 11px; gap: 4px; }
       .iv2-driver-chip .material-icons-outlined { font-size: 14px; }
-      .iv2-action-cta { margin-left: -16px; margin-right: -16px; gap: 12px; padding: 20px 14px; min-height: 92px; }
-      .iv2-action-btn { min-width: 0; flex: 1; height: 54px; padding: 0 14px; font-size: 17px; border-radius: 12px; }
-      .iv2-action-btn-create { min-width: 0; }
       .iv2-action-row { grid-template-columns: 1fr; }
     }
 
@@ -6256,7 +6236,8 @@
             </div>
           </div>
           <div class="v3-toolbar-right">
-            <button class="v3-bar-btn v3-bar-btn-sia" onclick="iv2ToggleSia()"><span class="material-icons-outlined" style="font-size:15px">auto_awesome</span>Ask SIA</button>
+            <button type="button" class="v3-bar-btn v3-bar-btn-sia" onclick="iv2ToggleSia()"><span class="material-icons-outlined" style="font-size:15px">auto_awesome</span>Ask SIA</button>
+            <button type="button" class="v3-bar-btn v3-bar-btn-action" onclick="iv2OpenActionDraft(event)"><span class="material-icons-outlined" style="font-size:16px">add</span>Create Action</button>
           </div>
         </div>
         <div class="iv2-scroll">
@@ -15889,10 +15870,6 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
       h += '<div class="iv2-widget iv2-drill" data-cat="operations" data-driver="oee opportunity"><div class="iv2-widget-hdr"><div class="iv2-widget-title">Cost Per Good Unit '+_catBadge('operations')+'</div><div class="iv2-widget-badge green">\u25bc $'+cpguDelta+'</div>'+_siaIcon('Cost Per Good Unit')+'</div><div class="iv2-widget-body"><div class="iv2-drill-from"><span class="material-icons-outlined">account_tree</span>Value Bridge: unit economics</div>';
       h += '<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px"><span style="font-size:28px;font-weight:800;color:#2a2b30">$'+cpguNow.toFixed(1)+'</span><span style="font-size:12px;color:#8f93a3">per unit</span><span style="font-size:11px;font-weight:600;color:#1c8d4f;margin-left:auto">Target: $'+cpguTarget.toFixed(1)+'</span></div>';
       h += '<div id="iv2-hc-cpgu" style="height:190px"></div></div></div>';
-      h += '</div>';
-      h += '<div class="iv2-action-cta" aria-label="Impact actions">';
-      h += '<button type="button" class="iv2-action-btn iv2-action-btn-sia" onclick="iv2ToggleSia()"><span class="material-icons-outlined">auto_awesome</span>Ask SIA</button>';
-      h += '<button type="button" class="iv2-action-btn iv2-action-btn-create" onclick="iv2OpenActionDraft(event)"><span class="material-icons-outlined">add</span>Create Action</button>';
       h += '</div>';
 
       wEl.innerHTML = h;
