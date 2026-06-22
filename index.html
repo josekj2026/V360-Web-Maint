@@ -3900,6 +3900,14 @@
       text-transform: uppercase;
     }
     .iv2-widget .iv2-drill-from .material-icons-outlined { font-size: 13px; }
+    .iv2-drill-note {
+      display: flex; align-items: flex-start; gap: 6px;
+      margin-top: 10px; padding-top: 8px; border-top: 1px dashed #e2e4e9;
+      color: #666975; font-size: 10.5px; line-height: 1.35;
+    }
+    .iv2-drill-note .material-icons-outlined {
+      font-size: 13px; color: #8a6cff; line-height: 1.2; flex-shrink: 0;
+    }
     .iv2-widget.iv2-drill { cursor: default; }
     .iv2-widget.iv2-drill .iv2-widget-body {
       justify-content: flex-start;
@@ -16063,6 +16071,18 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
       var pmPctNow = pmPctVals[nPts - 1], pmPctStart = pmPctVals[0];
       var cmPctNow = 100 - pmPctNow;
       var relBand = pmPctNow < 40 ? 'Unstable' : pmPctNow < 60 ? 'Reactive-Prone' : pmPctNow < 80 ? 'Improving' : 'Highly Reliable';
+      var compPmVals = pmPctVals.map(function(v, i) { return Math.min(96, Math.max(62, v + 38 + (i % 2 ? 2 : -1))); });
+      var compCmVals = pmPctVals.map(function(v, i) { return Math.min(90, Math.max(48, v + 24 + (i % 3 ? -2 : 3))); });
+      var compOverallVals = compPmVals.map(function(v, i) { return Math.round(v * 0.56 + compCmVals[i] * 0.44); });
+      var availableHrsVals = pvaActual.map(function(v, i) { return v + 18 + (i % 2) * 8; });
+      var loadingPctVals = pvaPlanned.map(function(v, i) { return Math.round(v / Math.max(1, availableHrsVals[i]) * 100); });
+      var compNow = compOverallVals[nPts - 1], loadingNow = loadingPctVals[nPts - 1];
+      var backlogBuckets = ['0–2 wks', '2–4 wks', '4–12 wks', '12+ wks'];
+      var backlogBase = Math.max(120, Math.round(bklVals[nPts - 1]));
+      var backlogCritical = [Math.round(backlogBase * 0.09), Math.round(backlogBase * 0.05), Math.round(backlogBase * 0.03), Math.round(backlogBase * 0.01)];
+      var backlogHigh = [Math.round(backlogBase * 0.22), Math.round(backlogBase * 0.17), Math.round(backlogBase * 0.12), Math.round(backlogBase * 0.05)];
+      var backlogMedium = [Math.round(backlogBase * 0.29), Math.round(backlogBase * 0.25), Math.round(backlogBase * 0.18), Math.round(backlogBase * 0.08)];
+      var backlogLow = [Math.round(backlogBase * 0.23), Math.round(backlogBase * 0.36), Math.round(backlogBase * 0.27), Math.round(backlogBase * 0.15)];
       var capHrsSeed = _v3v(74, 50, 100);
       var vbOppMonthly = _v3v(72, 50, 95);
       var vbBacklogValue = _v3v(4, 2, 8);
@@ -16155,6 +16175,11 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
       });
       h += '</div></div>';
       h += '<div class="iv2-widget iv2-drill" data-cat="maintenance" data-driver="labor pmcm"><div class="iv2-widget-hdr"><div class="iv2-widget-title">Planned vs. Actual Hours '+_catBadge('maintenance')+'</div><div class="iv2-widget-badge red">Gap closed ' + gapClosed + ' hrs</div>'+_siaIcon('Planned vs. Actual Hours')+'</div><div class="iv2-widget-body"><div class="iv2-drill-from"><span class="material-icons-outlined">account_tree</span>Value Bridge: labor efficiency</div><div id="iv2-hc-pva" style="height:270px"></div></div></div>';
+      h += '<div class="iv2-widget iv2-drill" data-cat="maintenance" data-driver="labor"><div class="iv2-widget-hdr"><div class="iv2-widget-title">Contractor Cost '+_catBadge('maintenance')+'</div><div class="iv2-widget-badge green">\u25bc '+ccDeltas[0]+'%</div>'+_siaIcon('Contractor Cost')+'</div><div class="iv2-widget-body"><div class="iv2-drill-from"><span class="material-icons-outlined">account_tree</span>Value Bridge: contractor spend</div><div id="iv2-hc-contractor-cost" style="height:220px"></div><div class="iv2-drill-note"><span class="material-icons-outlined">auto_awesome</span><span>Contractor spend is trending down; keep specialist work constrained to critical gaps.</span></div></div></div>';
+      h += '<div class="iv2-widget iv2-drill" data-cat="maintenance" data-driver="labor"><div class="iv2-widget-hdr"><div class="iv2-widget-title">Overtime Cost '+_catBadge('maintenance')+'</div><div class="iv2-widget-badge green">\u25bc '+ccDeltas[1]+'%</div>'+_siaIcon('Overtime Cost')+'</div><div class="iv2-widget-body"><div class="iv2-drill-from"><span class="material-icons-outlined">account_tree</span>Value Bridge: overtime reduction</div><div id="iv2-hc-overtime-cost" style="height:220px"></div><div class="iv2-drill-note"><span class="material-icons-outlined">auto_awesome</span><span>Weekend and exception work remain the main OT drivers; shift coverage into weekday standby.</span></div></div></div>';
+      h += '<div class="iv2-widget iv2-drill" data-cat="maintenance" data-driver="labor pmcm"><div class="iv2-widget-hdr"><div class="iv2-widget-title">Schedule Compliance '+_catBadge('maintenance')+'</div><div class="iv2-widget-badge '+(compNow>=90?'green':'red')+'">'+compNow+'%</div>'+_siaIcon('Schedule Compliance')+'</div><div class="iv2-widget-body"><div class="iv2-drill-from"><span class="material-icons-outlined">account_tree</span>Maint. Labor Saved: schedule adherence</div><div id="iv2-hc-schedule-compliance" style="height:220px"></div><div class="iv2-drill-note"><span class="material-icons-outlined">auto_awesome</span><span>PM compliance is stronger than CM; protect PM slots from reactive displacement.</span></div></div></div>';
+      h += '<div class="iv2-widget iv2-drill" data-cat="maintenance" data-driver="labor pmcm"><div class="iv2-widget-hdr"><div class="iv2-widget-title">Backlog by Priority '+_catBadge('maintenance')+'</div><div class="iv2-widget-badge red">'+backlogBase+' hrs</div>'+_siaIcon('Backlog by Priority')+'</div><div class="iv2-widget-body"><div class="iv2-drill-from"><span class="material-icons-outlined">account_tree</span>Maint. Labor Saved: backlog control</div><div id="iv2-hc-backlog-priority" style="height:220px"></div><div class="iv2-drill-note"><span class="material-icons-outlined">auto_awesome</span><span>Critical and high-priority hours are concentrated in early buckets; schedule them first.</span></div></div></div>';
+      h += '<div class="iv2-widget iv2-drill" data-cat="maintenance" data-driver="labor pmcm"><div class="iv2-widget-hdr"><div class="iv2-widget-title">Schedule Loading Efficiency '+_catBadge('maintenance')+'</div><div class="iv2-widget-badge '+(loadingNow>=90?'green':'red')+'">'+loadingNow+'%</div>'+_siaIcon('Schedule Loading Efficiency')+'</div><div class="iv2-widget-body"><div class="iv2-drill-from"><span class="material-icons-outlined">account_tree</span>Maint. Labor Saved: capacity loading</div><div id="iv2-hc-loading-efficiency" style="height:220px"></div><div class="iv2-drill-note"><span class="material-icons-outlined">auto_awesome</span><span>Loading remains below the 90% target; add deferred PMs into freed capacity.</span></div></div></div>';
       h += '<div class="iv2-widget iv2-drill" data-cat="maintenance" data-driver="pmcm opportunity"><div class="iv2-widget-hdr"><div class="iv2-widget-title">Unplanned Downtime (hrs/mo) '+_catBadge('maintenance')+'</div><div class="iv2-widget-badge green">\u27f3 ' + dtSaved + ' hrs saved</div>'+_siaIcon('Unplanned Downtime')+'</div><div class="iv2-widget-body"><div class="iv2-drill-from"><span class="material-icons-outlined">route</span>Capacity path: reliability</div><div id="iv2-hc-dt" style="height:270px"></div></div></div>';
       h += '<div class="iv2-widget iv2-drill" data-cat="operations" data-driver="oee opportunity"><div class="iv2-widget-hdr"><div class="iv2-widget-title">Scrap & Rework Cost '+_catBadge('operations')+'</div><div class="iv2-widget-badge green">\u27f3 $'+scrapSaved+'K/mo saved</div>'+_siaIcon('Scrap & Rework Cost')+'</div><div class="iv2-widget-body"><div class="iv2-drill-from"><span class="material-icons-outlined">account_tree</span>Value Bridge: quality recovery</div><div id="iv2-hc-sr" style="height:320px"></div></div></div>';
       h += '<div class="iv2-widget iv2-drill" data-cat="maintenance" data-driver="labor pmcm opportunity"><div class="iv2-widget-hdr"><div class="iv2-widget-title">Cost Category Trends '+_catBadge('maintenance')+'</div>'+_siaIcon('Cost Category Trends')+'</div><div class="iv2-widget-body"><div class="iv2-drill-from"><span class="material-icons-outlined">route</span>Capacity path: cost takeout</div><div class="iv2-cc-grid">';
@@ -16182,6 +16207,31 @@ try{Highcharts.chart('hc-m360m-wlwc',hcMerge({chart:{type:'bar',height:220},xAxi
         plotOptions:{column:{borderRadius:3,groupPadding:0.15,pointPadding:0.05,dataLabels:{enabled:true,format:'{y}h',style:{fontSize:'10px'}}}},
         legend:{enabled:true,align:'center',verticalAlign:'bottom'},
         series:[{name:'Planned',data:pvaPlanned,color:'#c3ccff'},{name:'Actual',data:pvaActual,color:'#3d5afe'}] });
+
+      _hc('iv2-hc-contractor-cost', { chart:{type:'spline',height:220}, xAxis:{categories:xl}, yAxis:{min:0,title:{text:null},labels:{format:'${value}K'}},
+        legend:{enabled:false}, tooltip:{valuePrefix:'$',valueSuffix:'K'},
+        plotOptions:{spline:{marker:{enabled:true,radius:4},dataLabels:{enabled:true,format:'${y}K',style:{fontSize:'10px',fontWeight:'700',textOutline:'none'}}}},
+        series:[{name:'Contractor Cost',data:contrVals,color:'#8a6cff'}] });
+
+      _hc('iv2-hc-overtime-cost', { chart:{type:'spline',height:220}, xAxis:{categories:xl}, yAxis:{min:0,title:{text:null},labels:{format:'${value}K'}},
+        legend:{enabled:false}, tooltip:{valuePrefix:'$',valueSuffix:'K'},
+        plotOptions:{spline:{marker:{enabled:true,radius:4},dataLabels:{enabled:true,format:'${y}K',style:{fontSize:'10px',fontWeight:'700',textOutline:'none'}}}},
+        series:[{name:'Overtime Cost',data:otVals,color:'#d92d20'}] });
+
+      _hc('iv2-hc-schedule-compliance', { chart:{height:220}, xAxis:{categories:xl}, yAxis:{min:0,max:100,title:{text:null},labels:{format:'{value}%'},plotLines:[{value:90,color:'#d92d20',dashStyle:'ShortDash',width:1.5,zIndex:5,label:{text:'90% Target',align:'right',style:{fontSize:'9px',color:'#d92d20',fontWeight:'700'}}}]},
+        legend:{enabled:true,align:'center',verticalAlign:'bottom'}, tooltip:{shared:true,valueSuffix:'%'},
+        plotOptions:{column:{borderRadius:3,groupPadding:0.18,pointPadding:0.05,dataLabels:{enabled:true,format:'{y}%',style:{fontSize:'9px',fontWeight:'700',textOutline:'none'}}},spline:{marker:{enabled:true,radius:4},dataLabels:{enabled:true,format:'{y}%',style:{fontSize:'9px',fontWeight:'800',textOutline:'none'}}}},
+        series:[{type:'column',name:'PM',data:compPmVals,color:'#c3ccff'},{type:'column',name:'CM',data:compCmVals,color:'#ff9292'},{type:'spline',name:'Overall %',data:compOverallVals,color:'#1f2a5c',lineWidth:2.5}] });
+
+      _hc('iv2-hc-backlog-priority', { chart:{type:'column',height:220}, xAxis:{categories:backlogBuckets}, yAxis:{title:{text:null},stackLabels:{enabled:true,style:{fontSize:'9px',fontWeight:'800',color:'#2a2b30',textOutline:'none'}}},
+        legend:{enabled:true,align:'center',verticalAlign:'bottom'}, tooltip:{shared:true,valueSuffix:' hrs'},
+        plotOptions:{column:{stacking:'normal',borderRadius:2,dataLabels:{enabled:true,style:{fontSize:'8px',fontWeight:'700',color:'#fff',textOutline:'none'}}}},
+        series:[{name:'Critical',data:backlogCritical,color:'#b42318'},{name:'High',data:backlogHigh,color:'#ff9292'},{name:'Medium',data:backlogMedium,color:'#ffab40'},{name:'Low',data:backlogLow,color:'#8f93a3'}] });
+
+      _hc('iv2-hc-loading-efficiency', { chart:{height:220}, xAxis:{categories:xl}, yAxis:[{min:0,title:{text:null},labels:{format:'{value}h'}},{min:50,max:120,opposite:true,title:{text:null},labels:{format:'{value}%'}}],
+        legend:{enabled:true,align:'center',verticalAlign:'bottom'}, tooltip:{shared:true},
+        plotOptions:{column:{borderRadius:3,groupPadding:0.16,pointPadding:0.05,dataLabels:{enabled:false}},spline:{marker:{enabled:true,radius:4},dataLabels:{enabled:true,format:'{y}%',style:{fontSize:'9px',fontWeight:'800',textOutline:'none'}}}},
+        series:[{type:'column',name:'Planned',data:pvaPlanned,color:'#c3ccff'},{type:'column',name:'Available',data:availableHrsVals,color:'#3d5afe'},{type:'spline',name:'Loading %',data:loadingPctVals,color:'#2a2b30',dashStyle:'ShortDash',lineWidth:2.4,yAxis:1}] });
 
       var vbCumOee = vbOee;
       var vbCumMaint = vbCumOee + vbMaint;
